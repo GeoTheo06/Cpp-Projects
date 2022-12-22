@@ -16,7 +16,7 @@ int main() {
         in >> c[i];
     }
 
-    x1 = b / c[0];  // temporary (set it to something like b / c[0])
+    x1 = b / c[0];
     int tempSize = x1;
     x1 += 1;
     for (int i = 0; i <= tempSize; i++) {
