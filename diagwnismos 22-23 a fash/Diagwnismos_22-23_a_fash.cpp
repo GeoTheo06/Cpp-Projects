@@ -8,28 +8,34 @@ int main() {
     int n = 0, b = 0, x1 = 0, sum = 0;
     float a = 0;
     int *c = new int[n];
-    float *x = new float[n];
-    float *x_result = new float[n];
+    int *x = new int[n];
+    int *x_result = new int[n];
 
     in >> n >> a >> b;
     for (int i = 0; i < n; i++) {
         in >> c[i];
     }
 
-    x1 = 100;  // temporary (set it to something like b / c[0])
+    x1 = b / c[0];  // temporary (set it to something like b / c[0])
     int tempSize = x1;
     x1 += 1;
-    x[0] = x1;
     for (int i = 0; i <= tempSize; i++) {
         x1 -= 1;
-
+        sum = 0;
         for (int k = 0; k < n; k++) {
-            x[k] = k == 0
-                       ? x1
-                       : x[k - 1] * 0.8;  // is this ok? pros thn k. efraimidou
+            if (k == 0) {
+                x[0] = x1;
+            } else {
+                x[k] = x[k - 1] * a;
+            }
+
             if (x[k] >= 10) {
                 x_result[k] = x[k] * c[k];
                 sum = sum + x_result[k];
+
+                if (sum > b) {
+                    break;
+                }
             } else {
                 x[k] = 0;
                 x_result[k] = 0;
