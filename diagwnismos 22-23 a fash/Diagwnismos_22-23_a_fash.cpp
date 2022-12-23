@@ -1,3 +1,6 @@
+/* USER: theodoridis_geo35pdp
+LANG: C++
+TASK: coupon */
 #include <bits/stdc++.h>
 using namespace std;
 
