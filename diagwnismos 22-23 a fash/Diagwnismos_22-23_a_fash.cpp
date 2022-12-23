@@ -54,6 +54,5 @@ int main() {
     for (int i = 0; i < n; i++) {
         out << endl << x[i];
     }
-
-    delete[] c, x, x_result;
+    return (0);
 }
