@@ -1,7 +1,8 @@
 /* USER: theodoridis_geo35pdp
 LANG: C++
 TASK: coupon */
-#include <bits/stdc++.h>
+#include <fstream>
+#include <string>
 using namespace std;
 
 int main() {
