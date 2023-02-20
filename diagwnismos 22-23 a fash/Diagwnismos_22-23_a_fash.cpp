@@ -11,11 +11,11 @@ int main() {
 
     int n = 0, b = 0, x1 = 0, sum = 0;
     float a = 0;
-    int *c = new int[n];
+    in >> n >> a >> b;
     int *x = new int[n];
+    int *c = new int[n];
     int *x_result = new int[n];
 
-    in >> n >> a >> b;
     for (int i = 0; i < n; i++) {
         in >> c[i];
     }
