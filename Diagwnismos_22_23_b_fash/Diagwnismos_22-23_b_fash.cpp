@@ -51,7 +51,7 @@ int main()
 
 
 //*******// KANTO ME RECURSION (backtrack) gia na vreis olous tous pithanous syndiasmous. Meta, des poios einai o pio fthinos //
-
+//kanto prwta me dfs kai meta dokimase monos sou
 
 
 
