@@ -6,94 +6,94 @@ TASK: roadfix */
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 using namespace std;
 
-void pithanoiSyndiasmoi(vector<int> &pithanoiSyndiasmoiProsforwn, vector<int> dektosSyndiasmos, int arxikoXiliometroErwthmatos, int telikoXiliometroErwthmatos, vector<int> arxikoXiliometroProsforas, vector<int> telikoXiliometroProsforas, int index)
+// prosfores{{20 45 10}, {30 75 20}, {40 80 30}, {60 95 5}, {90 100 15}	}
+// prosfores{     0,          1,          2,          3,         4		}
+// syndiasmoi{{0, 1, 2, 3, 4}, {0, 1, 3, 4}, {0, 2, 3, 4}} einai relative sto prosfores
+// arxikoXiliometro: 20
+// telikoXiliometro: 100
+void bruteForce(vector<vector<int>> prosfores, int arxikoXiliometro, int telikoXiliometro, vector<vector<int>> syndiasmoi, int index, int syndiasmoiCounter)
 {
-	if (arxikoXiliometroProsforas[index] <= arxikoXiliometroErwthmatos && telikoXiliometroProsforas[index] >= arxikoXiliometroErwthmatos)
+	if ((index == 0 && prosfores[index][0] <= arxikoXiliometro && prosfores[index][1] >= arxikoXiliometro) || (index != 0 /*<- den eimai sigouros an xreaizetai afto*/ && prosfores[index][0] <= prosfores[syndiasmoi[syndiasmoiCounter].back()][1] && prosfores[index][1] > prosfores[syndiasmoi[syndiasmoiCounter].back()][1]))
 	{
-		dektosSyndiasmos.push_back(index);
+		// prosfores[syndiasmoi[syndiasmoiCounter].back()][1])) einai to teliko xiliometro ths teleftaias prosforas tou current syndiasmou. Des apo panw sto comment gia na katalaveis to structure
+
+		syndiasmoi[syndiasmoiCounter].push_back(index);
+	}
+
+	if (index >= prosfores.size())
+	{
+		syndiasmoiCounter++;
 		return;
 	}
+	bruteForce(prosfores, arxikoXiliometro, telikoXiliometro, syndiasmoi, index + 1, syndiasmoiCounter);
 }
 
 int main()
 {
 	ifstream in("roadfix.in");
 	ofstream out("roadfix.out");
-	int prosfores, erwthmata;
 
-	in >> prosfores >> erwthmata;
+	// initializations
+
+	int arithmosProsforwn, arithmosErwthmatwn, arxikoXiliometroProsforas, mhkosProsforas, kostosProsforas, arxikoXiliometroErwthmatos, mhkosErwthmatos, telikoXiliometroErwthmatos;
+	vector<int> temp, dektosSyndiasmos;
+	vector<vector<int>> prosfores, erwthmata, syndiasmoi, prosforesConstant;
 
 	// pairnw times
-	int *mhkosProsforas = new int[prosfores - 1];
-	int *kostosProsforas = new int[prosfores - 1];
 
-	vector<int> arxikoXiliometroProsforas;
-	vector<int> telikoXiliometroProsforas;
-	int temp1, temp2;
-	for (int i = 0; i < prosfores; i++)
+	in >> arithmosProsforwn >> arithmosErwthmatwn;
+
+	/*	prosfores[Arxiko Xiliometro, Teliko Xiliometro, kostos]:
+		20 45 10
+		30 75 20
+		40 80 30
+		60 95 5
+		90 100 15
+	*/
+	for (int i = 0; i < arithmosProsforwn; i++)
 	{
-		in >> temp1 >> mhkosProsforas[i] >> kostosProsforas[i];
-		arxikoXiliometroProsforas.push_back(temp1);
-		telikoXiliometroProsforas.push_back(arxikoXiliometroProsforas[i] + mhkosProsforas[i]);
+		in >> arxikoXiliometroProsforas >> mhkosProsforas >> kostosProsforas;
+		temp.push_back(arxikoXiliometroProsforas);
+		temp.push_back(arxikoXiliometroProsforas + mhkosProsforas);
+		temp.push_back(kostosProsforas);
+		prosfores.push_back(temp);
+		temp.clear();
+	}
+	sort(prosfores.begin(), prosfores.end());
+
+	/*	erwthmata[Arxiko Xiliometro, Teliko Xiliometro]:
+		20 100
+		50 80
+		10 40
+	*/
+	for (int i = 0; i < arithmosErwthmatwn; i++)
+	{
+		in >> arxikoXiliometroErwthmatos >> mhkosErwthmatos;
+		temp.push_back(arxikoXiliometroErwthmatos);
+		temp.push_back(arxikoXiliometroErwthmatos + mhkosErwthmatos);
+		erwthmata.push_back(temp);
+		temp.clear();
 	}
 
-	int *mhkosErwthmatos = new int[erwthmata - 1];
-	vector<int> arxikoXiliometroErwthmatos;
-	vector<int> telikoXiliometroErwthmatos;
-	for (int i = 0; i < erwthmata; i++)
-	{
-		in >> temp1 >> mhkosErwthmatos[i];
-		arxikoXiliometroErwthmatos.push_back(temp1);
-		telikoXiliometroErwthmatos.push_back(arxikoXiliometroErwthmatos[i] + mhkosErwthmatos[i]);
-	}
-
-	// tha metraei oles tis prosfores pou to mhkos tous periexei to arxiko xiliometro tou erwthmatos
-	// vector<int> prosforesPrinToArxikoXiliometroErwthmatos;
-	// vector<int> olesOiPithanesProsforesMetaThnPrwth;
-	// vector<vector<int>> chain;
-	vector<int> pithanoiSyndiasmoiProsforwn;
-	vector<int> dektosSyndiasmos;
 	// logic
-	for (int i = 0; i < erwthmata; i++)
+
+	prosforesConstant = prosfores;
+	for (int i = 0; i < arithmosErwthmatwn; i++)
 	{
-		pithanoiSyndiasmoi(pithanoiSyndiasmoiProsforwn, dektosSyndiasmos, arxikoXiliometroErwthmatos[i], telikoXiliometroErwthmatos[i], arxikoXiliometroProsforas, telikoXiliometroProsforas, 0);
-
-		//*******// KANTO ME RECURSION (backtracking) gia na vreis olous tous pithanous syndiasmous. Meta, des poios einai o pio fthinos //
-		// kanto prwta me dfs kai meta dokimase monos sou
-
-		// // vriskw oles tis prosfores twn opoiwn to mhkos periexei to arxiko xiliometro tou erwthmatos kai apothikevw ton arithmo ths prosforas sto prosforesPrinToArxikoXiliometroErwthmatos
-		// for (int k = 0; k < prosfores; k++)
-		// {
-		// 	if (arxikoXiliometroProsforas[k] <= arxikoXiliometroErwthmatos[i] && telikoXiliometroProsforas[k] >= arxikoXiliometroErwthmatos[i])
-		// 	{
-		// 		prosforesPrinToArxikoXiliometroErwthmatos.push_back(k);
-		// 	}
-		// 	else if (arxikoXiliometroProsforas[k] > telikoXiliometroErwthmatos[i])
-		// 	{
-		// 		olesOiPithanesProsforesMetaThnPrwth.push_back(k);
-		// 	}
-		// }
-		// chain.push_back(prosforesPrinToArxikoXiliometroErwthmatos);
-		// // prosfores prin to arxiko xiliometro erwthmatos counter
-		// // int ptaxeCounter = 0;
-		// // edw tha vrw olous tous syndyasmous pou mporoun na ginoun ksekinontas apo tis prosfores pou periexontai sto prosforesPrinToArxikoXiliometroErwthmatos
-		// for (int k = 0; k < prosforesPrinToArxikoXiliometroErwthmatos.size(); k++)
-		// {
-		// 	for (int l = 0; l < olesOiPithanesProsforesMetaThnPrwth.size(); l++)
-		// 	{
-		// 		if (arxikoXiliometroProsforas[olesOiPithanesProsforesMetaThnPrwth[l]] <= telikoXiliometroProsforas[prosforesPrinToArxikoXiliometroErwthmatos[k]] && telikoXiliometroProsforas[olesOiPithanesProsforesMetaThnPrwth[l]] > telikoXiliometroProsforas[prosforesPrinToArxikoXiliometroErwthmatos[k]])
-		// 		{
-		// 			chain.push_back(prosforesPrinToArxikoXiliometroErwthmatos)
-		// 		}
-		// 	}
-		// }
-		// prosforesPrinToArxikoXiliometroErwthmatos.clear();
-		// olesOiPithanesProsforesMetaThnPrwth.clear();
+		prosfores = prosforesConstant;
+		// gia na xamhlwsw to complexity vriskw apo twra tis prosfores ektos twn oriwn kai tis eksaleifw apo twra.
+		for (int k = 0; k < prosfores.size(); k++)
+		{
+			if (prosfores[k][1] < erwthmata[i][0] || prosfores[k][0] > erwthmata[i][1])
+				prosfores.erase(prosfores.begin() + k);
+		}
+		bruteForce(prosfores, erwthmata[i][0], erwthmata[i][1], syndiasmoi, 0, 0);
 	}
 
-	delete[] mhkosProsforas, kostosProsforas, mhkosErwthmatos;
 	// Print
+
 	return (0);
 }
