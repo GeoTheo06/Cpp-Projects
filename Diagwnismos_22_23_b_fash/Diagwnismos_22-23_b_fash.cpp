@@ -9,26 +9,38 @@ TASK: roadfix */
 #include <algorithm>
 using namespace std;
 
-// prosfores{{20 45 10}, {30 75 20}, {40 80 30}, {60 95 5}, {90 100 15}	}
-// prosfores{     0,          1,          2,          3,         4		}
-// syndiasmoi{{0, 1, 2, 3, 4}, {0, 1, 3, 4}, {0, 2, 3, 4}} einai relative sto prosfores
-// arxikoXiliometro: 20
-// telikoXiliometro: 100
-void bruteForce(vector<vector<int>> prosfores, int arxikoXiliometro, int telikoXiliometro, vector<vector<int>> syndiasmoi, int index, int syndiasmoiCounter)
+// STRUCTURE:
+//  offers{{20 45 10}, {30 75 20}, {40 80 30}, {60 95 5}, {90 100 15}}
+//  offers{     0,          1,          2,          3,         4		}
+//
+//  currentCombination{{20, 45, 10}, {30, 75, 20}, {40, 80, 30}, {60, 95, 5}, {90, 100, 15}}
+//  currentCombination{      0,            1,            2,            3,            4}\
+// OR
+//  currentCombination{{20, 45, 10}, {30, 75, 20}, {60, 95, 5}, {90, 100, 15}}
+//  currentCombination{      0,            1,            2,           3}
+
+int low = 10001;
+void findCombinations(vector<vector<int>> &offers, int startingKilometer, int endingKilometer, vector<vector<int>> &currentCombination, int index, int sum)
 {
-	if ((index == 0 && prosfores[index][0] <= arxikoXiliometro && prosfores[index][1] >= arxikoXiliometro) || (index != 0 /*<- den eimai sigouros an xreaizetai afto*/ && prosfores[index][0] <= prosfores[syndiasmoi[syndiasmoiCounter].back()][1] && prosfores[index][1] > prosfores[syndiasmoi[syndiasmoiCounter].back()][1]))
+	// we have a valid combination!
+	if (currentCombination.size() > 0 && currentCombination[0][0] <= startingKilometer && currentCombination[0][1] >= startingKilometer && currentCombination.back()[0] <= endingKilometer && currentCombination.back()[1] >= endingKilometer)
 	{
-		// prosfores[syndiasmoi[syndiasmoiCounter].back()][1])) einai to teliko xiliometro ths teleftaias prosforas tou current syndiasmou. Des apo panw sto comment gia na katalaveis to structure
-
-		syndiasmoi[syndiasmoiCounter].push_back(index);
-	}
-
-	if (index >= prosfores.size())
-	{
-		syndiasmoiCounter++;
+		if (sum < low)
+			low = sum;
 		return;
 	}
-	bruteForce(prosfores, arxikoXiliometro, telikoXiliometro, syndiasmoi, index + 1, syndiasmoiCounter);
+
+	// adding and removing offers to the current combination and adding and removing total cost accordingly
+	for (int i = index; i < offers.size(); i++)
+	{
+		if (currentCombination.empty() || offers[i][0] <= currentCombination.back()[1] && offers[i][1] > currentCombination.back()[1])
+		{
+			currentCombination.push_back(offers[i]);
+			sum += offers[i][2];
+			findCombinations(offers, startingKilometer, endingKilometer, currentCombination, i + 1, sum);
+			currentCombination.pop_back();
+		}
+	}
 }
 
 int main()
@@ -36,64 +48,78 @@ int main()
 	ifstream in("roadfix.in");
 	ofstream out("roadfix.out");
 
-	// initializations
+	// 1. initializations
+	int offersCounter, queriesCounter, offerStartingKilometer, offerLength, offerCost, queryStartingKilometer, queryLength;
+	vector<int> temp, testingStartingKilometer, testingEndingKilometer;
+	vector<vector<int>> offers, queries, offersConstant, currentCombination;
+	// 1.
 
-	int arithmosProsforwn, arithmosErwthmatwn, arxikoXiliometroProsforas, mhkosProsforas, kostosProsforas, arxikoXiliometroErwthmatos, mhkosErwthmatos, telikoXiliometroErwthmatos;
-	vector<int> temp, dektosSyndiasmos;
-	vector<vector<int>> prosfores, erwthmata, syndiasmoi, prosforesConstant;
+	// 2. Getting Values
+	in >> offersCounter >> queriesCounter;
 
-	// pairnw times
-
-	in >> arithmosProsforwn >> arithmosErwthmatwn;
-
-	/*	prosfores[Arxiko Xiliometro, Teliko Xiliometro, kostos]:
+	/*	offers[starting kilometer, ending kilometer, cost]:
 		20 45 10
 		30 75 20
 		40 80 30
 		60 95 5
 		90 100 15
 	*/
-	for (int i = 0; i < arithmosProsforwn; i++)
+	for (int i = 0; i < offersCounter; i++)
 	{
-		in >> arxikoXiliometroProsforas >> mhkosProsforas >> kostosProsforas;
-		temp.push_back(arxikoXiliometroProsforas);
-		temp.push_back(arxikoXiliometroProsforas + mhkosProsforas);
-		temp.push_back(kostosProsforas);
-		prosfores.push_back(temp);
+		in >> offerStartingKilometer >> offerLength >> offerCost;
+		temp.push_back(offerStartingKilometer);
+		temp.push_back(offerStartingKilometer + offerLength);
+		temp.push_back(offerCost);
+		offers.push_back(temp);
 		temp.clear();
 	}
-	sort(prosfores.begin(), prosfores.end());
+	sort(offers.begin(), offers.end());
 
-	/*	erwthmata[Arxiko Xiliometro, Teliko Xiliometro]:
+	/*	queries[starting kilometer, ending kilometer]:
 		20 100
 		50 80
 		10 40
 	*/
-	for (int i = 0; i < arithmosErwthmatwn; i++)
+	for (int i = 0; i < queriesCounter; i++)
 	{
-		in >> arxikoXiliometroErwthmatos >> mhkosErwthmatos;
-		temp.push_back(arxikoXiliometroErwthmatos);
-		temp.push_back(arxikoXiliometroErwthmatos + mhkosErwthmatos);
-		erwthmata.push_back(temp);
+		in >> queryStartingKilometer >> queryLength;
+		temp.push_back(queryStartingKilometer);
+		temp.push_back(queryStartingKilometer + queryLength);
+		queries.push_back(temp);
 		temp.clear();
 	}
+	// 2.
 
-	// logic
-
-	prosforesConstant = prosfores;
-	for (int i = 0; i < arithmosErwthmatwn; i++)
+	// 3. Logic & Print
+	offersConstant = offers;
+	// iterating through every query
+	for (int i = 0; i < queriesCounter; i++)
 	{
-		prosfores = prosforesConstant;
-		// gia na xamhlwsw to complexity vriskw apo twra tis prosfores ektos twn oriwn kai tis eksaleifw apo twra.
-		for (int k = 0; k < prosfores.size(); k++)
+		// and through every offer (only for the elimination, recursion runs for every query only)
+		for (int k = 0; k < offers.size(); k++)
 		{
-			if (prosfores[k][1] < erwthmata[i][0] || prosfores[k][0] > erwthmata[i][1])
-				prosfores.erase(prosfores.begin() + k);
+			// there is offer neither in the starting nor in the ending kilometer of the current query, so i save time complexity by ignoring the recursion and printing -1
+			if (offers[k][0] <= queries[i][0] && offers[k][1] >= queries[i][0])
+				testingStartingKilometer.push_back(1);
+			if (offers[k][0] <= queries[i][1] && offers[k][1] >= queries[i][1])
+				testingEndingKilometer.push_back(1);
+			// To lower the complexity even further i find offers outside of the current query bounds and eliminate them before starting the recursion. This also saves time.
+			if (offers[k][1] < queries[i][0] || offers[k][0] > queries[i][1])
+				offers.erase(offers.begin() + k);
 		}
-		bruteForce(prosfores, erwthmata[i][0], erwthmata[i][1], syndiasmoi, 0, 0);
+		if (testingStartingKilometer.empty() || testingEndingKilometer.empty())
+			out << -1 << endl;
+		else
+		{
+			findCombinations(offers, queries[i][0], queries[i][1], currentCombination, 0, 0);
+			out << low << endl;
+		}
+		// resetting values
+		low = 10001;
+		testingStartingKilometer.clear();
+		testingEndingKilometer.clear();
+		offers = offersConstant;
 	}
-
-	// Print
-
+	// 3.
 	return (0);
 }
