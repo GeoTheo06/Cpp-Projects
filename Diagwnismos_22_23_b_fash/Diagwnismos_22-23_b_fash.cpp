@@ -74,7 +74,6 @@ int main()
 		temp.clear();
 	}
 	sort(offers.begin(), offers.end());
-
 	/*	queries[starting kilometer, ending kilometer]:
 		20 100
 		50 80
@@ -105,7 +104,16 @@ int main()
 				testingEndingKilometer.push_back(1);
 			// To lower the complexity even further i find offers outside of the current query bounds and eliminate them before starting the recursion. This also saves time.
 			if (offers[k][1] < queries[i][0] || offers[k][0] > queries[i][1])
+			{
 				offers.erase(offers.begin() + k);
+				k--;
+			}
+			// finding duplicate elements and eliminating them before the recursion (remember elements are already sorted)
+			if (k < offers.size() - 1 && offers[k][0] == offers[k + 1][0] && offers[k][1] == offers[k + 1][1])
+			{
+				offers.erase(offers.begin() + k);
+				k--;
+			}
 		}
 		if (testingStartingKilometer.empty() || testingEndingKilometer.empty())
 			out << -1 << endl;
