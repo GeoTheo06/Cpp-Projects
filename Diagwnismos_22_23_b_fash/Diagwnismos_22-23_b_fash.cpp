@@ -20,7 +20,8 @@ using namespace std;
 //  currentCombination{      0,            1,            2,           3}
 
 int low = 10001;
-void findCombinations(vector<vector<int>> &offers, int startingKilometer, int endingKilometer, vector<vector<int>> &currentCombination, int index, int sum)
+int sum = 0;
+void findCombinations(vector<vector<int>> &offers, int startingKilometer, int endingKilometer, vector<vector<int>> &currentCombination, int index)
 {
 	// we have a valid combination!
 	if (currentCombination.size() > 0 && currentCombination[0][0] <= startingKilometer && currentCombination[0][1] >= startingKilometer && currentCombination.back()[0] <= endingKilometer && currentCombination.back()[1] >= endingKilometer)
@@ -37,7 +38,8 @@ void findCombinations(vector<vector<int>> &offers, int startingKilometer, int en
 		{
 			currentCombination.push_back(offers[i]);
 			sum += offers[i][2];
-			findCombinations(offers, startingKilometer, endingKilometer, currentCombination, i + 1, sum);
+			findCombinations(offers, startingKilometer, endingKilometer, currentCombination, i + 1);
+			sum -= currentCombination.back()[2];
 			currentCombination.pop_back();
 		}
 	}
@@ -119,11 +121,12 @@ int main()
 			out << -1 << endl;
 		else
 		{
-			findCombinations(offers, queries[i][0], queries[i][1], currentCombination, 0, 0);
+			findCombinations(offers, queries[i][0], queries[i][1], currentCombination, 0);
 			out << low << endl;
 		}
 		// resetting values
 		low = 10001;
+		sum = 0;
 		testingStartingKilometer.clear();
 		testingEndingKilometer.clear();
 		offers = offersConstant;
