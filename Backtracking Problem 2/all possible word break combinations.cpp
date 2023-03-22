@@ -67,7 +67,8 @@ int main()
 		cin >> input;
 		if (input != "stop")
 			wordDict.push_back(input);
-	} while (input != "stop");
+	}
+	while (input != "stop");
 	cout << "Output:" << endl;
 	findPossibilities(s, wordDict, solution, combination, 0);
 }
