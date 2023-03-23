@@ -1,4 +1,4 @@
-/* USER: theodoridis_geo35pdp
+ /* USER: theodoridis_geo35pdp
 LANG: C++
 TASK: roadfix */
 
