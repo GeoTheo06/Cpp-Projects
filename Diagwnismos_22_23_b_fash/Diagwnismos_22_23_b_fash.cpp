@@ -24,14 +24,13 @@ int sum = 0;
 void findCombinations(vector<vector<int>>& offers, int startingKilometer, int endingKilometer, vector<vector<int>>& currentCombination, int index)
 {
 	// we have a valid combination!
-	if (currentCombination.size() > 0 && currentCombination[0][0] <= startingKilometer && currentCombination[0][1] >= startingKilometer && currentCombination.back()[0] <= endingKilometer && currentCombination.back()[1] >= endingKilometer)
+	if (!currentCombination.empty() && currentCombination[0][0] <= startingKilometer && currentCombination[0][1] >= startingKilometer && currentCombination.back()[0] <= endingKilometer && currentCombination.back()[1] >= endingKilometer)
 	{
 		if (sum < low)
 			low = sum;
 		return;
 	}
 
-	// adding and removing offers to the current combination and adding and removing total cost accordingly
 	for (int i = index; i < offers.size(); i++)
 	{
 		if (currentCombination.empty() || offers[i][0] <= currentCombination.back()[1] && offers[i][1] > currentCombination.back()[1])
