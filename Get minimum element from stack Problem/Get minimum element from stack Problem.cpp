@@ -40,26 +40,42 @@ Constraints:
 */
 
 #include <iostream>
+#include <stack>
 using namespace std;
 
 class Solution
 {
+	stack<int> smallestEl;
+	stack<int> s;
+	int poppedEl;
 public:
    /*returns min element from stack*/
 	int getMin()
 	{
-		// Your code here
+		if (s.empty())
+			return -1;
+		return smallestEl.top();
 	}
 
 	/*returns poped element from stack*/
 	int pop()
 	{
-		// Your code here
+		if (s.empty())
+		{
+			return -1;
+		}
+		poppedEl = s.top();
+		s.pop();
+		if (poppedEl == smallestEl.top())
+			smallestEl.pop();
+		return poppedEl;
 	}
 
 	/*push element x into the stack*/
 	void push(int x)
 	{
-		// Your code here
+		s.push(x);
+		if (smallestEl.empty() || smallestEl.top() >= x)
+			smallestEl.push(x);
 	}
 };
