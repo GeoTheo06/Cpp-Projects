@@ -41,35 +41,80 @@ using namespace std;
 class Solution
 {
 public:
-
-	void findCombinations(vector<string>& combinations, string s, string& substring, int dotCounter)
+	int number = 0;
+	int lastDotIndex, currentDotIndex;
+	//dotsUsedCounter: counts how many dots have been inserted | dotCounter: counts when the next dot will be added to the combination | lastDot: lastDot is the only dot that will change
+	void findCombinations(vector<string>& combinations, string s, string& combination, int dotCounter, int lastDotCounter, int dotsUsedCounter, int lastDot)
 	{
-		int dotCounter = 0;
+
+
+		//create combination
 		for (int i = 0; i < s.length(); i++)
 		{
+			//this will only run if we have not passed the last dot yet.
+			if (dotsUsedCounter <= 4)
+			{
+				//we add the numbers
+				combination += s[i];
+
+				//if it is time to add a dot
+				if (dotCounter == i + 1)
+				{
+					dotsUsedCounter++;
+					combination += '.';
+
+					//here we tell when it will be the next time to add the next dot. If the next dot is the last one, the "time to add a dot" will not be incremented by 1 but more.
+					if (lastDot == dotsUsedCounter - 1)
+						dotCounter += lastDotCounter;
+					else
+						dotCounter += 1;
+				}
+				//storing last dot index for later use
+				if (dotsUsedCounter == 4)
+					lastDotIndex = combination.length() - 1;
+			}
+			else
+			//after the last dot, just copy s as it is
+				combination += s[i];
 		}
 
-		findCombinations(combinations, s, substring, 1);
+			//check if combination is valid and push to combinations accordingly
+		combinations.push_back(combination);
+		for (int i = 0; i < combination.length(); i++)
+		{
+			if (combination[i] != '.')
+				number += combination[i];
+			else
+			{
+				number = 0;
+				currentDotIndex = i;
+			}
+
+			if (number > 255)
+			{
+				if (currentDotIndex > lastDotIndex)
+				{
+					//call accordingly
+				}
+				else
+				{
+					//call accordinglly
+				}
+				combinations.pop_back();
+				break;
+			}
+		}
+		//call with plus one on last dot
+
+		findCombinations(combinations, s, combination, dotCounter, lastDotCounter, 0, lastDot);
 	}
 
 	vector<string> genIp(string& s)
 	{
-		string substring;
+		string combination;
 		vector<string> combinations;
 
-		int divider = (float(s.length() / 4) == 0) ? s.length() / 4 : (s.length() / 4) + 1;
-
-		for (int i = 0; i < s.length(); i++)
-		{
-			substring += s[i];
-
-			if (i != 0 && (i + 1) % divider == 0)
-			{
-				substring += '.';
-			}
-		}
-		cout << substring;
-		//findCombinations(combinations, s, substring, s.length() / 4);
+		findCombinations(combinations, s, combination, 1, 1, 0, 4);
 		return combinations;
 	}
 
@@ -78,6 +123,6 @@ public:
 int main()
 {
 	Solution solution;
-	string numbers = "12323512621";
+	string numbers = "12323512612";
 	solution.genIp(numbers);
 }
