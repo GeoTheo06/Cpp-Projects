@@ -46,6 +46,7 @@ Constraints:
 
 
 #include <iostream>
+#include <stack>
 using namespace std;
 
 class Solution
@@ -54,7 +55,79 @@ public:
 //Function to check if brackets are balanced or not.
 	bool ispar(string x)
 	{
-		// Your code here
+		//op = opening parenthesis | cp = closing parenthesis
+		stack<char> op;
+		int opCounter = 0, cpCounter = 0;
+		for (int i = 0; i < x.length(); i++)
+		{
+			switch (x[i])
+			{
+				case '(':
+				case '[':
+				case '{':
+				op.push(x[i]);
+				opCounter++;
+				break;
+				case ')':
+				if (op.empty())
+				{
+					return false;
+				}
+				else if (op.top() == '(')
+				{
+					op.pop();
+					cpCounter++;
+				}
+				else
+					return false;
+				break;
+				case ']':
+				if (op.empty())
+				{
+					return false;
+				}
+				else if (op.top() == '[')
+				{
+					op.pop();
+					cpCounter++;
+				}
+				else
+					return false;
+				break;
+				case '}':
+				if (op.empty())
+				{
+					return false;
+				}
+				else if (op.top() == '{')
+				{
+					op.pop();
+					cpCounter++;
+				}
+				else
+					return false;
+				break;
+			}
+		}
+		if (opCounter == cpCounter)
+		{
+			return true;
+		}
+		else return false;
 	}
-
 };
+
+main()
+{
+	int t;
+	string a;
+	cin >> t;
+	while (t--)
+	{
+		cin >> a;
+		Solution obj;
+		if (obj.ispar(a))
+			cout << "balanced" << endl;
+		else
+			cout << "not balanced" << endl;
+	}
