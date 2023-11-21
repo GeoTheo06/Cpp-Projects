@@ -44,7 +44,6 @@ Constraints:
 1 <= |x| <= 32000
 */
 
-
 #include <iostream>
 #include <stack>
 using namespace std;
@@ -52,23 +51,23 @@ using namespace std;
 class Solution
 {
 public:
-//Function to check if brackets are balanced or not.
+	// Function to check if brackets are balanced or not.
 	bool ispar(string x)
 	{
-		//op = opening parenthesis | cp = closing parenthesis
+		// op = opening parenthesis | cp = closing parenthesis
 		stack<char> op;
 		int opCounter = 0, cpCounter = 0;
 		for (int i = 0; i < x.length(); i++)
 		{
 			switch (x[i])
 			{
-				case '(':
-				case '[':
-				case '{':
+			case '(':
+			case '[':
+			case '{':
 				op.push(x[i]);
 				opCounter++;
 				break;
-				case ')':
+			case ')':
 				if (op.empty())
 				{
 					return false;
@@ -81,7 +80,7 @@ public:
 				else
 					return false;
 				break;
-				case ']':
+			case ']':
 				if (op.empty())
 				{
 					return false;
@@ -94,7 +93,7 @@ public:
 				else
 					return false;
 				break;
-				case '}':
+			case '}':
 				if (op.empty())
 				{
 					return false;
@@ -113,7 +112,8 @@ public:
 		{
 			return true;
 		}
-		else return false;
+		else
+			return false;
 	}
 };
 
@@ -131,3 +131,4 @@ main()
 		else
 			cout << "not balanced" << endl;
 	}
+}
